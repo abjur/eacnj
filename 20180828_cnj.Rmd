@@ -1,0 +1,469 @@
+---
+title: "Estatística e Ciência de Dados"
+author: "Julio Trecenti"
+date: "Brasília, 28/08/2018"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE,
+                      out.width = "90%", fig.align = "center")
+```
+
+# Faxineiro de dados
+
+```{r}
+knitr::include_graphics("imgs/jtrecenti.png")
+```
+
+---
+
+# Provocação
+
+Como interpretar esse gráfico?
+
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=6}
+library(tidyverse)
+p <- tibble::tribble(
+   ~ano, ~vagas_br, ~form_bra, ~form_eua,
+  2004L,1334L,407L,544L,
+  2005L,1356L,456L,603L,
+  2006L,1296L,474L,606L,
+  2007L,1429L,469L,610L,
+  2008L,1766L,440L,715L,
+  2009L,1673L,404L,747L,
+  2010L,1836L,471L,849L,
+  2011L,1972L,459L,1078L,
+  2012L,1954L,425L,1345L,
+  2013L,1798L,448L,1656L,
+  2014L,1787L,386L,1937L,
+  2015L,1789L,453L,2305L,
+  2016L,1817L,364L,2758L
+) %>% 
+  select(-vagas_br) %>% 
+  gather(tipo_form, form, starts_with("form")) %>% 
+  mutate(tipo_form = if_else(tipo_form == "form_bra", "Brasil", "EUA")) %>% 
+  ggplot(aes(x = ano, y = form, colour = tipo_form)) + 
+  geom_line(size = 2) +
+  geom_point(size = 3) +
+  scale_colour_viridis_d(begin = 0.4, end = 0.8) +
+  scale_y_continuous(breaks = 500 * 0:10) +
+  theme_minimal(16) +
+  labs(colour = "País",
+       x = "Ano", y = "Formandos",
+       title = "Quantidade de formandos em estatística",
+       caption = "Fonte: INEP e ASA") +
+  theme(legend.position = "bottom")
+p
+```
+
+---
+
+## Novos tempos?
+
+- Nos últimos anos os tipos de dados mudaram.
+- Coisas muito importantes no mercado hoje em dia:
+
+```{r echo=FALSE, out.width="23%", fig.align='default'}
+knitr::include_graphics(c("imgs/friends.jpg", "imgs/acordao.png", "imgs/wave.png"))
+```
+
+---
+
+## Deep Learning
+
+- Popularidade recente da área de deep learning.
+
+--
+
+- Promete fazer muitas coisas.
+
+--
+
+- Tem um linguajar diferente do que estamos acostumados.
+
+```{r echo=FALSE, out.width='70%'}
+knitr::include_graphics("imgs/deepl.png")
+```
+
+---
+
+## Problemas
+
+- Muita, muita gente usando.
+
+--
+
+- Mercado está pedindo. Só se fala nisso.
+
+--
+
+- Não aprendemos nada disso na faculdade
+
+--
+
+- O que estudamos é ultrapassado?
+
+---
+
+## Juntando com marketing
+
+```{r}
+knitr::include_graphics("imgs/diff.png")
+```
+
+---
+
+## Depressão
+
+```{r}
+knitr::include_graphics("imgs/quit.png")
+```
+
+---
+
+## Depressão 2
+
+```{r}
+knitr::include_graphics("imgs/dead.png")
+```
+
+---
+
+## Não entre em pânico!
+
+```{r}
+knitr::include_graphics("imgs/panic.jpg")
+```
+
+---
+
+## Não entre em pânico!
+
+- Existem muitos falsos cognatos.
+
+--
+
+- A maioria das coisas que estudamos é útil.
+
+--
+
+- Ainda assim, vale à pena estudar os conceitos.
+
+---
+
+## Regressão logística
+
+Componente aleatório
+
+$$
+Y|x \sim \text{Bernoulli}(\mu)
+$$
+
+Componente sistemática
+
+$$
+g(\mu) = g(P(Y=1\,|\,x)) = \alpha + \beta x
+$$
+
+Função de ligação
+
+$$
+g(\mu) = \log\left(\frac{\mu}{1-\mu}\right)
+$$
+
+---
+
+## Função Deviance
+
+$$
+D(y,\hat\mu(x)) = \sum_{i=1}^n 2\left[y_i\log\frac{y_i}{\hat\mu_i(x_i)} + (1-y_i)\log\left(\frac{1-y_i}{1-\hat\mu_i(x_i)}\right)\right]
+$$
+
+$$
+= 2 D_{KL}\left(y||\hat\mu(x)\right),
+$$
+
+onde $D_{KL}(p||q) = \sum_i p_i\log\frac{p_i}{q_i}$ é a divergência de Kullback-Leibler.
+
+---
+
+## Deep learning
+
+```{r echo=FALSE, out.width='50%'}
+knitr::include_graphics("imgs/y1.png")
+```
+
+--
+
+- Faz uma combinação linear inputs $x$, adiciona um viés (*bias*) e depois aplica uma função de ativação não linear.
+
+--
+
+- No nosso caso, somente adiciona um parâmetro multiplicando $x$ e um viés fixo, fazendo
+
+$$
+f(x) = w x + \text{bias}
+$$
+
+--
+
+- A função de ativação é uma sigmoide, dada por
+
+$$
+\sigma(x) = \frac{1}{1 + e^{-x}}
+$$
+
+--
+
+- Coincidência?
+
+---
+
+## Função de custo: adivinha?
+
+$$
+D_{KL}(p(x)||q(x))
+$$
+
+Conclusão: rede neural com uma camada é equivalente à regressão logística.
+
+## Dúvidas
+
+- Se é a mesma coisa, por que está ganhando tanta popularidade?
+
+--
+
+- Devo estudar deep learning ou posso continuar fazendo regressão logística?
+
+---
+class: inverse, center, middle
+
+# Qual é o meu papel?
+
+---
+class: center, middle
+
+# Somos os líderes da ciência de dados!
+
+---
+
+## Onde estamos
+
+```{r}
+knitr::include_graphics("imgs/img01.png")
+```
+
+---
+
+## Ciência de dados
+
+```{r}
+knitr::include_graphics("imgs/img02.png")
+```
+
+---
+class: center, middle
+
+# O que queremos?
+
+---
+
+## Aumentar registros
+
+```{r, fig.height=6}
+knitr::include_graphics("imgs/img03.png")
+```
+
+---
+
+## Mais formados, menos evasão
+
+```{r}
+knitr::include_graphics("imgs/img04.png")
+```
+
+---
+
+## Trazer os cientistas de dados
+
+```{r}
+knitr::include_graphics("imgs/img05.png")
+```
+
+---
+class: inverse, center, middle
+
+# Como fazemos?
+
+---
+
+# Exemplo: ABJ
+
+Valores:
+
+- Fazer > definir
+
+--
+
+- Dados abertos
+
+--
+
+- Conhecimento aberto
+
+--
+
+- Código aberto
+
+---
+
+# FAZENDO ciência de dados
+
+```{r}
+knitr::include_graphics("imgs/r4ds.png")
+```
+
+---
+
+# Metodolodia em 3 passos
+
+```{r}
+knitr::include_graphics("imgs/esaj01.png")
+```
+
+---
+
+# Metodolodia em 3 passos
+
+```{r}
+knitr::include_graphics("imgs/esaj02.png")
+```
+
+---
+
+# Metodolodia em 3 passos
+
+```{r}
+knitr::include_graphics("imgs/esaj03.png")
+```
+
+---
+
+# Problemas: padronização
+
+```{r}
+knitr::include_graphics("imgs/cifra.png")
+```
+
+---
+
+# Problemas: acesso
+
+```{r}
+knitr::include_graphics("imgs/captcha_conv.gif")
+```
+
+---
+
+# Solução
+
+```{r, out.width="80%"}
+knitr::include_graphics("imgs/api.png")
+```
+
+### ...mas quem vai tocar isso?
+
+---
+
+# Proposta
+
+```{r}
+knitr::include_graphics("imgs/selo.png")
+```
+
+
+---
+
+## Primeiro passo: essencial 
+
+- Permitir listagem de processos a partir de escopos
+- Acabar com os CAPTCHAs
+
+---
+
+## Segundo passo: necessário
+
+**API** de acesso ao Selo Justiça em Números.
+
+--
+
+Dados organizados em três blocos:
+
+### Processo
+
+### Partes
+
+### Movimentações
+
+---
+
+## Terceiro passo: desejo
+
+### Mais informações úteis para análise de dados
+
+--
+
+### input: fatos, pedidos e argumentações
+
+### output: resultado, entrada de recursos, votos
+
+--
+
+### Exige reclassificação
+
+### utilização de modelos estatísticos supervisionados
+
+---
+class: inverse, middle, center
+
+# Futuro: API para todos os Tribunais
+
+---
+class: inverse
+
+# Provocação
+
+Como interpretar esse gráfico?
+
+```{r warning=FALSE, message=FALSE, fig.width=10, fig.height=6}
+p
+```
+
+---
+
+# Stalk me
+
+### Códigos
+
+- https://github.com/abjur
+- https://github.com/decryptr
+- https://github.com/courtsbr
+- https://github.com/curso-r
+- https://github.com/jtrecenti
+
+### Sites
+
+- https://abj.org.br
+- https://curso-r.com
+
+### Email
+
+jtrecenti@abj.org.br
